@@ -48,7 +48,7 @@ class Animal:
                     self.obituary = self.name + " was killed by " + attacker.fullName + " in " + str(self.deathDate) + " at " + reason.name + "."
 
             else:
-                self.obituary = self.name + " died in " + self.species.genderPronouns[self.gender][0]+ " sleep at the age of " + self.age + "."
+                self.obituary = self.name + " died in " + self.species.genderPronouns[self.gender][0]+ " sleep at the age of " + str(self.age) + "."
             
             try:
                 if self.family.leader == self:
@@ -159,6 +159,8 @@ class Humanoid(Animal):
         if self.title:
             self.fullName += " " + self.title
 
+        self._strength, self._defense, self._speed = self.strength, self.defense, self.speed
+        self.strength, self.defense, self.speed = 3, 3, 3
         self.strengthDealt, self.defenseDealt, self.speedDealt = 0,0,0
         self.kills = []
 
@@ -191,6 +193,18 @@ class Humanoid(Animal):
     def update(self):
         if self.age > self.lifespan:
             self.hurt(self.health)
+        pubertyPoint = .2 * self.lifespan
+        elderPoint = .8 * self.lifespan
+        if self.age < pubertyPoint:
+            self.strength +=  (self._strength - self.strength) // (pubertyPoint - self.age)
+        if self.age > elderPoint:
+            if random.random() < self.age / self.lifespan:
+                self.strength -= 1
+                self.defense -= 1
+                self.speed -= 1
+        else:
+            self.strength, self.defense, self.speed = self._strength, self._defense, self._speed
+            
         
     def updateStats(self):
         if self.strengthDealt >= 50:

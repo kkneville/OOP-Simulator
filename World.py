@@ -35,9 +35,9 @@ class World:
         string = self.name + " (Year: " + str(self.year) +", Population: " + str(self.population) +"): the desolate rock upon which existince hinges."
         print(string)
 
-    def update(self):
+    def update(self, years):
+        self.year += years
         for character in self.alive:
             character.update()
-            self.year += 1
 
 earth = World('Earth', 0)

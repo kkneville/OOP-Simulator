@@ -47,9 +47,9 @@ class Fight:
                     attackChance = random.random() * 20
                     if attackChance <= fighter.speed:
                         fighter.speedDealt += int(attackChance)
-                        attack = 2 * int(random.random() * fighter.strength * (fighter.health / fighter.maxHealth))
-                        defense = 3 * int(random.random() * fighter.target.defense * (fighter.target.health / fighter.target.maxHealth))
-                        damage = (attack - defense)
+                        attack = int(random.random() * fighter.strength * (fighter.health / fighter.maxHealth))
+                        defense = int(random.random() * fighter.target.defense * (fighter.target.health / fighter.target.maxHealth))
+                        damage = 4 * (attack - defense)
                         fighter.strengthDealt += attack
                         fighter.target.defenseDealt += defense
                         if damage <= 0:

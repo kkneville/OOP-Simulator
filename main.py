@@ -14,7 +14,7 @@ if __name__ == "__main__":
         joseph = Human('Joseph', 'Male')
         ana = Human('Ana', 'Female')
 
-        earth.year = 28
+        earth.update(10)
         
         adam.strength = 13
         eve.defense = 13
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         b2 = ana.reproduce(joseph)
         b3 = ana.reproduce(joseph)
 
-        earth.year = 40
+        earth.update(10)
         
         adam.declareWar(joseph.family)
         if adam.family.livingMembers:
