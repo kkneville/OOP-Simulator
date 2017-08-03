@@ -48,7 +48,7 @@ class Animal:
                     self.obituary = self.name + " was killed by " + attacker.fullName + " in " + str(self.deathDate) + " at " + reason.name + "."
 
             else:
-                self.obituary = self.name + " died in " + self.species.genderPronouns[self.gender][0]+ "at the age of " + self.age
+                self.obituary = self.name + " died in " + self.species.genderPronouns[self.gender][0]+ " sleep at the age of " + self.age + "."
             
             try:
                 if self.family.leader == self:
@@ -100,7 +100,11 @@ class Animal:
 
     @property
     def age(self):
-        return self.world.year - self.birthdate
+        if self.alive:
+            return self.world.year - self.birthdate
+        self._age = self.deathDate - self.birthdate
+        return self._age
+            
 
     @property
     def bio(self):
