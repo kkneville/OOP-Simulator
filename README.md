@@ -1,7 +1,8 @@
 # OOP-Simulator
 OOP-based fantasy RPG environment simulator
 
-To Do:
+# To Do:
+
 Add different races
 
 Add horde animal objects
@@ -17,6 +18,7 @@ Skill sets
 Log/History
 
 
-Working on:
+
+# Working on:
 
 World and Character aging/progression
