@@ -9,8 +9,6 @@ Add horde animal objects
 
 Settlements
 
-Equipments 
-
 Relationship status
 
 Skill sets
@@ -22,3 +20,16 @@ Log/History
 # Working on:
 
 World and Character aging/progression
+
+Equipment and resources
+
+
+# Done:
+
+Added Humanoids (Humans, Elves, Dwarves)
+
+Update Cycles
+
+Primitive Combat
+
+Family Trees
