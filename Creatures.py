@@ -1,6 +1,12 @@
 from World import *
 from Family import *
 from Combat import *
+import math
+
+def genRandom(a, b, stdDev = 3):
+    def mean(numbers):
+        return float(sum(numbers)) / max(len(numbers), 1)
+    return int(random.uniform( mean([a, b]) + stdDev, mean([a, b]) - stdDev))
 
 class Animal:
     genderPronouns = {'Male': ['his', 'he'], 'Female': ['her', 'she']}
@@ -26,13 +32,13 @@ class Animal:
 
         self.world.addChars(self)
 
-    def eat(self, food):
-        self.heal(food.healAmount)
-
     def heal(self, amount):
+        if self.health + amount > self.maxHealth:
+            amount = self.maxHealth - self.health
+        if int(math.ceil(amount // 5)) > self.family.food:
+            amount = self.family.food * 5
         self.health += amount
-        if self.health > self.maxHealth:
-            self.health = self.maxHealth
+        self.family.food -= math.ceil(amount // 5)
 
     def hurt(self, amount, attacker = None, reason = None):
         self.health -= amount
@@ -45,11 +51,11 @@ class Animal:
                 attacker.kills += [self]
             if reason:
                 if isinstance(reason, Fight):
-                    self.obituary = self.name + " was killed by " + attacker.fullName + " in " + str(self.deathDate) + " at " + reason.name + "."
+                    self.obituary = "{} was killed by {} in {} at {}.".format(self.name, attacker.fullName,str(self.deathDate), reason.name)
 
             else:
-                self.obituary = self.name + " died in " + self.species.genderPronouns[self.gender][0]+ " sleep at the age of " + str(self.age) + "."
-            
+                self.obituary = "{} died in {} sleep at the age of {}.".format(self.name, self.species.genderPronouns[self.gender][0], str(self.age))
+
             try:
                 if self.family.leader == self:
                     self.family.appointLeader()
@@ -67,10 +73,10 @@ class Animal:
         battle = Fight(friends, enemies)
         powerBalance = battle.powerBalance(friends, enemies)
         if powerBalance > 1.1:
-            print(self.fullName + " decides to fight " + ", ".join(target.name for target in targets))
+            print("{} decides to fight {}".format(self.fullName, ", ".join(target.name for target in targets)))
             battle.fight()
         else:
-            print(self.fullName + " decides not to fight " + ", ".join(target.name for target in targets))
+            print(self.fullName + "{} decides not to fight {}".format(self.fullName, ", ".join(target.name for target in targets)))
 
     def reproduce(self, mate):
         if self.age >= 10 and mate.age >= 10 and self.gender == 'Female' and mate.gender == 'Male' and self.species == mate.species and self.world == mate.world:
@@ -78,7 +84,7 @@ class Animal:
             self.hasGivenBirth = True
             self.children += [child]
             mate.children += [child]
-            print(self.fullName + " and " + mate.fullName + " gave birth to a " + child.species.className.lower() + " " + child.gender.lower() + ", " + child.fullName + ", in year " + str(self.world.year))
+            print("{} and {} gave birth to the {} {} {} in the year {}".format(self.fullName, mate.fullName, child.species.className.lower(), child.gender.lower(), child.fullName, str(self.world.year)))
             return child
 
     def create(self):
@@ -104,24 +110,23 @@ class Animal:
             return self.world.year - self.birthdate
         self._age = self.deathDate - self.birthdate
         return self._age
-            
+
 
     @property
     def bio(self):
-        string = ("A " + str(self.age) + " year old " + self.species.className + " " + self.gender.lower() + " known as " + self.fullName + " born in year "  + str(self.birthdate) )
-        try:
+        string = "A {} year old {} {} known as {} born in year {}.".format(str(self.age), self.species.className, self.gender.lower(),self.fullName,str(self.birthdate))
+        if self.father:
+            string +=  " to " + self.father.fullName
+        if self.mother:
             if self.father:
-                string +=  " to " + self.father.fullName
-            if self.mother:
-                if self.father:
-                    string += " and"
-                string +=  " to " + self.mother.fullName
-        except AttributeError:
+                string += " and"
+            string +=  " to " + self.mother.fullName
+        else:
             string += " from unknown forces"
         string += ". "
         if not self.alive:
             string += self.obituary
-            
+
         string += ("\n\n\tStrength: "+ str(self.strength) + "\n\tDefense: " + str(self.defense) + "\n\tSpeed: " + str(self.speed))
         if not self.kills == []:
             string += "\n\n\t" + str(len(self.kills)) + " Kills:"
@@ -129,11 +134,14 @@ class Animal:
                 string += "\n\t" + kill.fullName + " (Year "+ str(kill.deathDate) + ")"
 
         string += "\n"
-        
+
         print(string)
 
 class Humanoid(Animal):
     className = 'Humanoid'
+    numeralTitles = ['', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
+    combatQualifications = [lambda x: x.defense > 15, lambda x: x.strength > 15, lambda x: x.strength > 17 and x.defense > 13 and len(x.kills) > 0, lambda x: len(x.kills) > 3, lambda x: (x.strength > 20 and x.defense > 15) or len(x.kills) > 5, lambda x : (x.strength > 23 and x.defense > 17) or len(x.kills) > 7, lambda x: (x.strength > 25 and x.defense > 19 and x.speed > 12) or len(x.kills) > 9, lambda x: len([kill for kill in x.kills if kill in kill.family.leaders]) >= 3 and x.strength > 15]
+    familyQualifications = [lambda x: x.family.score > 30, lambda x: x.family.score > 50, lambda x: x.family.score > 100, lambda x: x.family.score > 150, lambda x: x.family.score > 200]
 
     def __init__(self, name, gender, parents, familyKind, maxHealth,
                  lifespan, strength, defense, speed):
@@ -153,7 +161,7 @@ class Humanoid(Animal):
                 self.family = Family(fName, familyKind)
         self.family.addMember(self)
         self.fullName = self.name + " " + self.family.name
-        
+
         self.title = self.species.numeralTitles[len([member for member in self.family.members if member.name == self.name and member is not self])]
         self.titleIndex = 0
         if self.title:
@@ -170,7 +178,7 @@ class Humanoid(Animal):
         rep += 10 if self.family.leader == self else 0
         rep += self.titleIndex
         return rep
-        
+
     def create(mother, father):
         gender = ['Female', 'Male'] [int(round(random.random()))]
         if gender == 'Male':
@@ -181,7 +189,7 @@ class Humanoid(Animal):
         name = eligibleNames[int(random.random() * len(eligibleNames))]
         parents = [mother, father]
 
-        maxHealth = genRandom(mother.maxHealth, father.maxHealth)
+        maxHealth = genRandom(mother.maxHealth, father.maxHealth, 10)
         lifespan = genRandom(mother.lifespan, father.lifespan)
         strength = genRandom(mother.strength, father.strength)
         defense = genRandom(mother.defense, father.defense)
@@ -190,22 +198,32 @@ class Humanoid(Animal):
 
         return creation
 
-    def update(self):
-        if self.age > self.lifespan:
-            self.hurt(self.health)
+    def update(self, wood, iron, food):
+
         pubertyPoint = .2 * self.lifespan
         elderPoint = .8 * self.lifespan
         if self.age < pubertyPoint:
             self.strength +=  (self._strength - self.strength) // (pubertyPoint - self.age)
         if self.age > elderPoint:
+            if self.age > self.lifespan:
+                self.hurt(self.health)
+            self.maxHealth -= 3
+            if self.health > self.maxHealth:
+                self.health = self.maxHealth
             if random.random() < self.age / self.lifespan:
                 self.strength -= 1
                 self.defense -= 1
                 self.speed -= 1
         else:
             self.strength, self.defense, self.speed = self._strength, self._defense, self._speed
-            
-        
+
+        self.family.wood += wood
+        self.family.iron += iron
+        self.family.food += food
+        if self.health < self.maxHealth:
+            self.heal(10)
+
+
     def updateStats(self):
         if self.strengthDealt >= 50:
             self.strength += self.strengthDealt // 50
@@ -219,53 +237,72 @@ class Humanoid(Animal):
             self.speed += int(self.speedDealt // 50)
             print(self.fullName + "'s speed increased by " + str(self.speedDealt // 50) + " points to " + str(self.speed) + "!")
             self.speedDealt = self.speedDealt % 50
-        self.updateTitle
+        self.updateTitle()
 
     def updateTitle(self):
         if self is self.family.leader:
-            titleList = self.species.familyTitles
+            qualifications = self.species.familyQualifications
+            titles = self.species.familyTitles
         else:
-            titleList = self.species.combatTitles
-        for title in titleList[self.titleIndex:]:
-            if title[1](self):
-                self.titleIndex = titleList.index(title)
-                self.title = title[0]
-                print(self.fullName + " will now be known as '" + self.title + "'")
+            qualifications = self.species.combatQualifications
+            titles = self.species.combatTitles
+        for qual in qualifications[self.titleIndex:]:
+            if qual(self):
+                self.titleIndex = qualifications.index(qual)
+                self.title = titles[self.titleIndex]
+                print("{} will now be known as '{}'".format(self.fullName, self.title))
                 self.fullName = self.name + " " + self.family.name + " " + self.title
             else:
-                break        
-    
+                break
+
     def declareWar(self, enemyFamily):
         if self.family.leader == self:
             print(self.fullName + ", leader of " + self.family.fullName + ", has declared war upon " + enemyFamily.fullName + "!")
-            self.family.declareWar(enemyFamily)
+            return self.family.declareWar(enemyFamily)
 
 class Human(Humanoid):
     className = 'Human'
-    maleNames = ['Adam', 'John', 'Calvin', 'Cain', 'Noah', 'Isaac', 'Argen', 'Alexander', 'Julius', 'Augustus', 'Joseph', 'Dairus', 'Cyrus', 'Xerxes', 'Paris', 'James', 'Jared', 'Ishmael', 'Jonathan', 'Jordan']
-    femaleNames = ['Eve', 'Mary', 'Emma', 'Isabella', 'Irene', 'Sophie', 'Caroline', 'Donna', 'Emily', 'Sicily', 'Camille', 'Alexis', 'Margery', 'Cersei', 'Penelope', 'Helen', 'Parthia', 'Julia']
-    familyNames = ['Snow', 'Stark', 'Habsburg', 'Xing', 'Nesha', 'Strausburg', 'Zhang', 'Ali', 'Borjinsson', 'Amalis', 'Dawi', 'Esper', 'of the Old Kings', 'Sumarin', 'Renauve', 'Hondari', 'Belesarus', 'Isauros', 'Corinthia', 'Qing', 'Heleviticus', 'Julia', 'Junii', 'Markoff', 'Ulteria', 'Heilbon', 'of Caspia', 'of the Lowborns', 'of Dawnwich']
-    numeralTitles = ['', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
-    combatTitles = [['the Hunter', lambda x: x.strength > 13], ['the Warrior', lambda x: x.strength > 15 and x.defense > 10], ['the Bear', lambda x: x.strength > 15 and x.defense > 12 or len(x.kills) > 3], ['the Lion', lambda x : x.strength > 17 and x.defense > 14 or len(x.kills) > 5], ['the Dragon', lambda x: x.strength > 20 and x.defense > 15 and x.speed > 13 or len(x.kills) > 7], ['the Kingslayer', lambda x: len([kill for kill in x.kills if kill in kill.family.leaders]) >= 3 and x.strength > 15]]
-    familyTitles = [['the Noble', lambda x: x.family.score > 30], ['the Great', lambda x: x.family.score > 50], ['the Legendary', lambda x: x.family.score > 100], ['Kaiser', lambda x: x.family.score > 150], ['Imperator', lambda x: x.family.score > 20]]
+    data_file = open('./Data/Human.txt', 'r')
+    maleNames = data_file.readline().split(', ') [:-1]
+    femaleNames = data_file.readline().split(', ') [:-1]
+    familyNames = data_file.readline().split(', ') [:-1]
+    combatTitles = data_file.readline().split(', ') [:-1]
+    familyTitles = data_file.readline().split(', ') [:-1]
 
-    def __init__(self, name, gender, parents = [None, None], maxHealth = 30,
-                 lifespan = 30, strength = 10, defense = 10, speed = 10):
+    def __init__(self, name, gender, parents = [None, None], maxHealth = 100,
+                 lifespan = 30, strength = 11, defense = 7, speed = 12):
         self.species = Human
         Humanoid.__init__(self, name, gender, parents, 'House', maxHealth, lifespan, strength, defense, speed)
 
+    def update(self):
+        Humanoid.update(self, 15, 15, 15)
+
+
+
 class Dwarf(Humanoid):
     className = 'Dwarf'
-    maleNames = ['Thorgrim', 'Harsaw', 'Gravden', 'Kaifur', 'Weschen', 'Argen', 'Gorlai', 'Asgor', 'Urist', 'Agseth', 'Darai', 'Gerensei', 'Kazark', 'Karstar', 'Karak', 'Tengrim', 'Zargrim']
-    femaleNames = ['Asgora', 'Karazai', 'Thorsai', 'Valkareri', 'Caroline', 'Donna', 'Emily', 'Sicily', 'Camille', 'Alexis', 'Margery', 'Cersei', 'Penelope', 'Helen', 'Parthia', 'Julia']
-    familyNames = ['Irondrake', 'Ironhold', 'Grudgebearer', 'Silvermarked', 'Ironblood', 'Lairstone', 'Grudgestone', 'Bronzeslasher', 'Drakehelm', 'Silverhelm', 'Ironhelm', 'BoatMurdered', 'Oakenhelm', 'Shakenfield', 'Gorhammer', 'Ironsurge']
-    numeralTitles = ['', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
-    combatTitles = [['the Hunter', lambda x: x.strength > 13], ['the Warrior', lambda x: x.strength > 15 and x.defense > 10], ['the Bear', lambda x: x.strength > 15 and x.defense > 12 or len(x.kills) > 3], ['the Lion', lambda x : x.strength > 17 and x.defense > 14 or len(x.kills) > 5], ['the Dragon', lambda x: x.strength > 20 and x.defense > 15 and x.speed > 13 or len(x.kills) > 7], ['the Kingslayer', lambda x: len([kill for kill in x.kills if kill in kill.family.leaders]) >= 3 and x.strength > 15]]
-    familyTitles = [['the Noble', lambda x: x.family.score > 30], ['the Great', lambda x: x.family.score > 50], ['the Legendary', lambda x: x.family.score > 100], ['Kaiser', lambda x: x.family.score > 150], ['Imperator', lambda x: x.family.score > 20]]
+    data_file = open('./Data/Dwarf.txt', 'r')
+    maleNames = data_file.readline().split(', ') [:-1]
+    femaleNames = data_file.readline().split(', ') [:-1]
+    familyNames = data_file.readline().split(', ') [:-1]
+    combatTitles = data_file.readline().split(', ') [:-1]
+    familyTitles = data_file.readline().split(', ') [:-1]
 
-    def __init__(self, name, gender, parents = [None, None], maxHealth = 40,
-                 lifespan = 30, strength = 11, defense = 13, speed = 6):
+    def __init__(self, name, gender, parents = [None, None], maxHealth = 115,
+                 lifespan = 30, strength = 11, defense = 12, speed = 7):
         self.species = Dwarf
         Humanoid.__init__(self, name, gender, parents, 'Clan', maxHealth, lifespan, strength, defense, speed)
 
+class Elf(Humanoid):
+    className = 'Elf'
+    data_file = open('./Data/Elf.txt', 'r')
+    maleNames = data_file.readline().split(', ') [:-1]
+    femaleNames = data_file.readline().split(', ') [:-1]
+    familyNames = data_file.readline().split(', ') [:-1]
+    combatTitles = data_file.readline().split(', ') [:-1]
+    familyTitles = data_file.readline().split(', ') [:-1]
 
+    def __init__(self, name, gender, parents = [None, None], maxHealth = 75,
+                 lifespan = 30, strength = 11, defense = 7, speed = 13):
+        self.species = Elf
+        Humanoid.__init__(self, name, gender, parents, 'Confederation', maxHealth, lifespan, strength, defense, speed)

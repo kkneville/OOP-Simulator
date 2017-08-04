@@ -19,6 +19,10 @@ class Family:
         self.score = 0
         self.leaders = []
 
+        self.wood = 0
+        self.iron = 0
+        self.food = 0
+
     def addMember(self, member):
         self.members += [member]
         if len(self.members) == 1:
@@ -28,13 +32,13 @@ class Family:
     def appointLeader(self, candidate = None):
         if self.livingMembers == []:
             self.extinctionDate = self.world.year
-            print("The Great " + self.kind + " of " + self.name + " has perished in the year " + str(self.extinctionDate) +", with " + self.leader.fullName + " as the last of " + self.leader.species.genderPronouns[self.leader.gender][0] + " kin.") 
+            print("The Great " + self.kind + " of " + self.name + " has perished in the year " + str(self.extinctionDate) +", with " + self.leader.fullName + " as the last of " + self.leader.species.genderPronouns[self.leader.gender][0] + " kin.")
         elif candidate and candidate in self.livingMembers:
             self.leader = candidate
-        else: 
+        else:
             self.leader = self.heirs[0]
         self.leaders += [self.leader]
-            
+
     @property
     def heirs(self):
         if self.kind == 'Clan':
@@ -51,7 +55,7 @@ class Family:
         else:
             heirOrder = self.livingMembers
         return heirOrder
-        
+
     def familyToTeam(self):
         return Team(self.fullName, [member for member in self.livingMembers if member.age > 8], self.leader)
 
@@ -70,6 +74,7 @@ class Family:
             self.score -= warpoints
         for fighter in war.combatants:
             fighter.updateStats()
+        return war
 
     @property
     def livingMembers(self):
@@ -79,7 +84,7 @@ class Family:
     def bio(self):
         string = self.fullName + " (Founded in year "+ str(self.world.year) + " by " + self.founder.fullName +") has " + str(len(self.livingMembers)) + " living members."
         if not self.livingMembers:
-            string += " All lines of this house are now extinct." 
+            string += " All lines of this house are now extinct."
         string += """
   """ + self.leader.fullName + " (" + str(self.leader.strength) + ", "  + str(self.leader.defense) + ", " + str(self.leader.speed) + ")" + ", "
 
@@ -87,12 +92,12 @@ class Family:
             string += "Founder"
         else:
             string += "Leader"
-        
+
         for member in self.livingMembers:
             if member is not self.leader:
                 string += """
   """+ member.fullName + " (" + str(member.strength) + ", " + str(member.defense) + ", " + str(member.speed) + ")"
         print(string)
-        
+
     def __repr__(self):
         return self.fullName

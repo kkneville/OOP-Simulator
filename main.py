@@ -10,17 +10,12 @@ if __name__ == "__main__":
         earth.year = 5
         adam = Human('Adam', 'Male')
         eve = Human('Eve', 'Female')
-        
+
         joseph = Human('Joseph', 'Male')
         ana = Human('Ana', 'Female')
 
         earth.update(10)
-        
-        adam.strength = 13
-        eve.defense = 13
-        joseph.strength = 13
-        ana.defense = 10
-        
+
         a1 = eve.reproduce(adam)
         a2 = eve.reproduce(adam)
         a3 = eve.reproduce(adam)
@@ -30,12 +25,12 @@ if __name__ == "__main__":
         b3 = ana.reproduce(joseph)
 
         earth.update(10)
-        
-        adam.declareWar(joseph.family)
-        if adam.family.livingMembers:
-            aWin += 1
-        if joseph.family.livingMembers:
+
+        war = adam.declareWar(joseph.family)
+        if war.victor.leader is joseph:
             jWin += 1
+        if war.victor.leader is adam:
+            aWin += 1
 
 print('Adam Wins: ' + str(aWin))
 print('Joeseph Wins: ' + str(jWin))

@@ -3,11 +3,6 @@ import pdb
 import random
 import types
 
-def genRandom(a, b, stdDev = 4):
-    def mean(numbers):
-        return float(sum(numbers)) / max(len(numbers), 1)
-    return int(random.uniform( mean([a, b]) + stdDev, mean([a, b]) - stdDev))
-
 class World:
 
     def __init__(self, name, year):
@@ -25,7 +20,7 @@ class World:
     @property
     def dead(self):
         return [char for char in self.chars if not char.alive]
-    
+
     @property
     def population(self):
         return len(self.alive)
