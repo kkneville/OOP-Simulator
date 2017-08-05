@@ -1,0 +1,57 @@
+% Wood: + 1 pts
+% Iron: + 2 pts, -1 speed
+% + 1 pts bonus for weapon
+% Name, Equipment Slot, Wood, Iron, Food, Quantity
+% Strength Bonus, Defense Bonus, Speed Bonus
+
+
+Axe, Hand, 1, 1, 0, 1, 
+3, 1, -1, 
+
+Sword, Hand, 1, 2, 0, 1, 
+4, 2, -2, 
+
+Spear, Hand, 2, 1, 0, 1, 
+4, 1, -1, 
+
+Halberd, Hand, 2, 2, 0, 1, 
+5, 2, -2, 
+
+Hammer, Hand, 2, 2, 0, 1, 
+4, 3, -2, 
+
+Mace, Hand, 1, 1, 0, 1, 
+2, 2, -1, 
+
+Bow, Hand, 2, 0, 0, 1, 
+4, 0, 0, 
+
+Crossbow, Hand, 3, 0, 0, 1, 
+4, 0, 0, 
+
+Arrow, Bag, 2, 1, 0, 10, 
+2, 0, 0, 
+
+Bolt, Bag, 1, 1, 0, 10, 
+1, 0, 0, 
+
+Shield, Hand, 1, 2, 0, 1, 
+1, 4, -3, 
+
+Helm, Head, 0, 1, 0, 1, 
+0, 2, -2, 
+
+Plate, Chest, 0, 2, 0, 1, 
+0, 4, -3, 
+
+Leggings, Legs, 0, 2, 0, 1, 
+0, 4, -3, 
+
+Gauntlet, Arm, 0, 1, 0, 2, 
+0, 1, -2, 
+
+Boots, Feet, 0, 1, 0, 2, 
+0, 1, -2, 
+
+
+1
