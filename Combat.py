@@ -17,8 +17,8 @@ class Fight:
         teamA = friendlySide if friendlySide else self.teamA
         teamB = opponentSide if opponentSide else self.teamB
 
-        teamAScore = sum([(.5 + fighter.strength + fighter.defense + fighter.speed) * (fighter.health/fighter.maxHealth) for fighter in teamA.members if fighter.active])
-        teamBScore = sum([(.5 + fighter.strength + fighter.defense + fighter.speed) * (fighter.health/fighter.maxHealth) for fighter in teamB.members if fighter.active])
+        teamAScore = sum([(.5 + fighter.strength + fighter.defense + fighter.speed + fighter.eqStrength + fighter.eqDefense + fighter.eqSpeed) * (fighter.health/fighter.maxHealth) for fighter in teamA.members if fighter.active])
+        teamBScore = sum([(.5 + fighter.strength + fighter.defense + fighter.speed + fighter.eqStrength + fighter.eqDefense + fighter.eqSpeed) * (fighter.health/fighter.maxHealth) for fighter in teamB.members if fighter.active])
         try:
             score = teamAScore / teamBScore
         except ZeroDivisionError:
@@ -27,7 +27,7 @@ class Fight:
 
     @property
     def combatants(self):
-        self.participants = sorted([combatant for combatant in self.participants if combatant.alive], key = lambda x : -x.speed)
+        self.participants = sorted([combatant for combatant in self.participants if combatant.alive], key = lambda x : -(x.speed + x.eqSpeed))
         return self.participants
 
     def __repr__():
@@ -38,7 +38,7 @@ class Fight:
     def fight(self):
         def pickTarget(fighter):
             eligible = [target for target in fighter.team.opponent.members if target.alive and target.active]
-            fighter.target = eligible[int(random.random() * len(eligible))]
+            fighter.target = random.choice(eligible)
 
         print(self.name + " begins.")
         while not self.victor:
@@ -50,16 +50,16 @@ class Fight:
                     except AttributeError:
                         pickTarget(fighter)
 
-                    attackChance = random.random() * 15
-                    if attackChance <= fighter.speed:
+                    attackChance = random.randint(0,25)
+                    if attackChance <= fighter.speed + fighter.eqSpeed:
                         fighter.speedDealt += 1
-                        attack = 3*int(random.random() * fighter.strength * (fighter.health / fighter.maxHealth))
-                        defense = 2*int(random.random() * fighter.target.defense * (fighter.target.health / fighter.target.maxHealth))
+                        attack = 3 * random.randint(0, int(fighter.strength * (fighter.target.health / fighter.target.maxHealth) + fighter.eqStrength + 1))
+                        defense = 2 * random.randint(0, int(fighter.target.defense * (fighter.target.health / fighter.target.maxHealth) + fighter.target.eqDefense + 1))
                         damage = (attack - defense)
                         fighter.strengthDealt += attack
                         fighter.target.defenseDealt += defense
                         if damage <= 0:
-                            print(fighter.fullName + "'s ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") attack was blocked by " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
+                            #print(fighter.fullName + "'s ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") attack was blocked by " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
                             fighter.target.team.blockedAttacks += 1
                             pass
                         else:
@@ -79,7 +79,7 @@ class Fight:
 
                     else:
                         opponentPower = self.powerBalance(fighter.team.opponent, fighter.team)
-                        if fighter.health <= .4 * fighter.maxHealth and opponentPower > 2.5 and round(random.random() * 4) < opponentPower:
+                        if fighter.health <= .4 * fighter.maxHealth and opponentPower > 2.5 and random.randint(0,5) < opponentPower:
                             fighter.active = False
                             fighter.team.remove(fighter)
                             print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") flees from the battle!" )
@@ -90,7 +90,7 @@ class Fight:
                                 break
 
                         else:
-                            print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") missed " + fighter.species.genderPronouns[fighter.gender][0] + " attack on " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
+                            #print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") missed " + fighter.species.genderPronouns[fighter.gender][0] + " attack on " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
                             fighter.team.missedAttacks += 1
 
         print(self.victor.name + " are victorious over " + self.loser.name +"!")

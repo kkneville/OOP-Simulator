@@ -1,5 +1,6 @@
 from Creatures import *
 from Combat import *
+from Equipment import *
 
 class Family:
     familyDict = {}
@@ -20,8 +21,9 @@ class Family:
         self.leaders = []
 
         self.wood = 0
-        self.iron = 0
+        self.metal = 0
         self.food = 0
+        self.rivals = []
 
     def addMember(self, member):
         self.members += [member]
@@ -32,7 +34,7 @@ class Family:
     def appointLeader(self, candidate = None):
         if self.livingMembers == []:
             self.extinctionDate = self.world.year
-            print("The Great " + self.kind + " of " + self.name + " has perished in the year " + str(self.extinctionDate) +", with " + self.leader.fullName + " as the last of " + self.leader.species.genderPronouns[self.leader.gender][0] + " kin.")
+            print("The Great {} of {} has perished in the year {}, with {} as the last of {} kin.".format(self.kind, self.name, str(self.extinctionDate), self.leader.fullName, self.leader.species.genderPronouns[self.leader.gender][0]))
         elif candidate and candidate in self.livingMembers:
             self.leader = candidate
         else:
@@ -76,13 +78,17 @@ class Family:
             fighter.updateStats()
         return war
 
+    def update(self):
+        print('Updated {}.'.format(self.fullName))
+        
+
     @property
     def livingMembers(self):
         return [member for member in self.members if member.alive]
 
     @property
     def bio(self):
-        string = self.fullName + " (Founded in year "+ str(self.world.year) + " by " + self.founder.fullName +") has " + str(len(self.livingMembers)) + " living members."
+        string = "{} (Founded in year {} by {}) has {} living members.".format(self.fullName, str(self.world.year), self.founder.fullName, str(len(self.livingMembers)))
         if not self.livingMembers:
             string += " All lines of this house are now extinct."
         string += """

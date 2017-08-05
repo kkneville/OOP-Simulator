@@ -27,7 +27,7 @@ class World:
 
     @property
     def bio (self):
-        string = self.name + " (Year: " + str(self.year) +", Population: " + str(self.population) +"): the desolate rock upon which existince hinges."
+        string = "{} (Year: {}, Population: {}): the desolate rock upon which existince hinges.".format(self.name, str(self.year), str(self.population))
         print(string)
 
     def update(self, years):
