@@ -43,4 +43,4 @@ Family Trees
 
 # Running:
 
-Clone, cd the OOP-Simulator directory, and run 'python3 main.py'
+Clone, cd the OOP-Simulator directory, and run `python3 main.py`
