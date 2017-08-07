@@ -40,3 +40,7 @@ Update Cycles
 Primitive Combat
 
 Family Trees
+
+# Running:
+
+Clone, cd the OOP-Simulator directory, and run 'python3 main.py'
