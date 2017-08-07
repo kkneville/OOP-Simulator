@@ -1,21 +1,20 @@
-from Creatures import *
-from Combat import *
-from Equipment import *
+from World import earth
+from Combat import Team, Fight
 
 class Family:
     familyDict = {}
     def __init__(self, name, kind, **kwargs):
         self.name = name
         self.kind = kind
-        self.fullName = self.kind + " " + self.name
+        self.full_name = self.kind + " " + self.name
         self.world = earth
-        self.foundingYear = self.world.year
-        Family.familyDict [self.name] = self
+        self.founding_year = self.world.year
+        Family.familyDict[self.name] = self
         self.members = []
         for member in kwargs:
             self.members += [member]
         if self.members:
-            self.appointLeader()
+            self.appoint_leader()
             self.founder = self.leader
         self.score = 0
         self.leaders = []
@@ -25,18 +24,18 @@ class Family:
         self.food = 0
         self.rivals = []
 
-    def addMember(self, member):
+    def add_member(self, member):
         self.members += [member]
         if len(self.members) == 1:
-            self.appointLeader(member)
+            self.appoint_leader(member)
             self.founder = self.leader
 
-    def appointLeader(self, candidate = None):
-        if self.livingMembers == []:
-            self.extinctionDate = self.world.year
-            print("The Great {} of {} has perished in the year {}, with {} as the last of {} kin.".format(self.kind, self.name, str(self.extinctionDate), self.leader.fullName, self.leader.species.genderPronouns[self.leader.gender][0]))
-        elif candidate and candidate in self.livingMembers:
+    def appoint_leader(self, candidate=None):
+        if candidate and candidate in self.living_members:
             self.leader = candidate
+        elif self.living_members == []:
+            self.extinction_date = self.world.year
+            print("The Great {} of {} has perished in the year {}, with {} as the last of {} kin.".format(self.kind, self.name, str(self.extinction_date), self.leader.full_name, self.leader.species.genderPronouns[self.leader.gender][0]))
         else:
             self.leader = self.heirs[0]
         self.leaders += [self.leader]
@@ -44,28 +43,28 @@ class Family:
     @property
     def heirs(self):
         if self.kind == 'Clan':
-            heirOrder = sorted(self.members, key = lambda x: -x.age)
+            heir_order = sorted(self.members, key=lambda x: -x.age)
         if self.kind == 'House':
             try:
-                heirOrder = [child for child in self.leader.children if child.alive and child.gender == 'Male'] + [child for child in self.leader.children if child.alive and child.gender == 'Female']
+                heir_order = [child for child in self.leader.children if child.alive and child.gender == 'Male'] + [child for child in self.leader.children if child.alive and child.gender == 'Female']
             except AttributeError:
-                heirOrder = self.livingMembers
+                heir_order = self.living_members
         if self.kind == 'Regents':
-            heirOrder = sorted(self.livingMembers, key = lambda x: -x.reputation)
+            heir_order = sorted(self.living_members, key=lambda x: -x.reputation)
         if self.kind == 'Tribe':
-            heirOrder = sorted(self.livingMembers, key = lambda x: -x.strength - x.speed - x.defense)
+            heir_order = sorted(self.living_members, key=lambda x: -x.strength - x.speed - x.defense)
         else:
-            heirOrder = self.livingMembers
-        return heirOrder
+            heir_order = self.living_members
+        return heir_order
 
-    def familyToTeam(self):
-        return Team(self.fullName, [member for member in self.livingMembers if member.age > 8], self.leader)
+    def family_to_team(self):
+        return Team(self.full_name, [member for member in self.living_members if member.age > 8], self.leader)
 
-    def declareWar(self, enemyFamily):
-        friendly = self.familyToTeam()
-        enemy = enemyFamily.familyToTeam()
+    def declare_war(self, enemyFamily):
+        friendly = self.family_to_team()
+        enemy = enemyFamily.family_to_team()
         war = Fight(friendly, enemy)
-        warpoints =  len(war.combatants)
+        warpoints = len(war.combatants)
         power = war.powerBalance(friendly, enemy)
         war.fight()
         if war.victor == friendly:
@@ -79,31 +78,31 @@ class Family:
         return war
 
     def update(self):
-        print('Updated {}.'.format(self.fullName))
+        print('Updated {}.'.format(self.full_name))
 
 
     @property
-    def livingMembers(self):
+    def living_members(self):
         return [member for member in self.members if member.alive]
 
     @property
     def bio(self):
-        string = "{} (Founded in year {} by {}) has {} living members.".format(self.fullName, str(self.world.year), self.founder.fullName, str(len(self.livingMembers)))
-        if not self.livingMembers:
+        string = "{} (Founded in year {} by {}) has {} living members.".format(self.full_name, str(self.founding_year), self.founder.full_name, str(len(self.living_members)))
+        if not self.living_members:
             string += " All lines of this house are now extinct."
         string += """
-  """ + self.leader.fullName + " (" + str(self.leader.strength) + ", "  + str(self.leader.defense) + ", " + str(self.leader.speed) + ")" + ", "
+  """ + self.leader.full_name + " (" + str(self.leader.strength) + ", "  + str(self.leader.defense) + ", " + str(self.leader.speed) + ")" + ", "
 
         if self.leader is self.founder:
             string += "Founder"
         else:
             string += "Leader"
 
-        for member in self.livingMembers:
+        for member in self.living_members:
             if member is not self.leader:
                 string += """
-  """+ member.fullName + " (" + str(member.strength) + ", " + str(member.defense) + ", " + str(member.speed) + ")"
+  """+ member.full_name + " (" + str(member.strength) + ", " + str(member.defense) + ", " + str(member.speed) + ")"
         print(string)
 
     def __repr__(self):
-        return self.fullName
+        return self.full_name

@@ -1,9 +1,13 @@
-from Creatures import *
-import random
+"""Starting point: Spanwns a Human 4 v 4"""
+
+
+from Creatures import Human
+from World import earth
 
 if __name__ == "__main__":
-    aWin = 0
-    jWin = 0
+
+    adam_win = 0
+    joseph_win = 0
     for x in range(1):
         print('World Generated')
         earth.year = 5
@@ -27,9 +31,9 @@ if __name__ == "__main__":
 
         war = adam.declareWar(joseph.family)
         if war.victor.leader is joseph:
-            jWin += 1
+            joseph_win += 1
         if war.victor.leader is adam:
-            aWin += 1
+            adam_win += 1
 
-print('Adam Wins: ' + str(aWin))
-print('Joeseph Wins: ' + str(jWin))
+print('Adam Wins: ' + str(adam_win))
+print('Joeseph Wins: ' + str(joseph_win))

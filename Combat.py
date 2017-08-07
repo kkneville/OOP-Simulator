@@ -1,5 +1,6 @@
-from Creatures import *
+from World import earth
 from termcolor import colored
+import random
 
 class Fight:
 
@@ -12,7 +13,8 @@ class Fight:
         self.loser = None
         self.world = earth
         self.yearFought = self.world.year
-        self.name = 'The battle between ' + self.teamA.name + ', led by ' + self.teamA.leader.fullName +', and ' + self.teamB.name + ', led by ' + self.teamB.leader.fullName + ', in the year ' + str(self.yearFought)
+        self.name = 'The battle between ' + self.teamA.name + ', led by ' + self.teamA.leader.full_name +', and ' + self.teamB.name + ', led by ' + self.teamB.leader.full_name + ', in the year ' + str(self.yearFought)
+        self.battleResults = ""
 
     def powerBalance(self, friendlySide = None, opponentSide = None):
         teamA = friendlySide if friendlySide else self.teamA
@@ -31,10 +33,11 @@ class Fight:
         self.participants = sorted([combatant for combatant in self.participants if combatant.alive], key = lambda x : -(x.speed + x.eqSpeed))
         return self.participants
 
-    def __repr__():
-        string += "{} occurred.".format(self.name)
+    def __repr__(self):
+        string = "{} occurred.".format(self.name)
         if self.victor:
-            string.repr += "{}, led by {}, was victorious over {}, led by {}.".format(self.victor.name, self.victor.leader.fullName, self.loser.name, self.loser.leader.fullName)
+            string += "{}, led by {}, was victorious over {}, led by {}.".format(self.victor.name, self.victor.leader.full_name, self.loser.name, self.loser.leader.full_name)
+        return string
 
     def fight(self):
         def pickTarget(fighter):
@@ -60,13 +63,13 @@ class Fight:
                         fighter.strengthDealt += attack
                         fighter.target.defenseDealt += defense
                         if damage <= 0:
-                            #print(fighter.fullName + "'s ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") attack was blocked by " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
+                            #print(fighter.full_name + "'s ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") attack was blocked by " + fighter.target.full_name + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
                             fighter.target.team.blockedAttacks += 1
-                            pass
+                            continue
                         else:
                             fighter.target.hurt(damage, fighter, self)
                             if not fighter.target.alive:
-                                print(colored(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") struck down " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +") with " + str(damage) +" damage!", 'red'))
+                                print(colored(fighter.full_name + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") struck down " + fighter.target.full_name + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +") with " + str(damage) +" damage!", 'red'))
                                 fighter.target.team.teamCasulties += 1
                                 fighter.team.opponent.remove(fighter.target)
                                 if fighter.team.opponent.members == []:
@@ -75,7 +78,7 @@ class Fight:
                                     break
                                 pickTarget(fighter)
                             else:
-                                print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") dealt " + str(damage) + " damage to " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
+                                print(fighter.full_name + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") dealt " + str(damage) + " damage to " + fighter.target.full_name + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
                                 fighter.team.damageDealt += damage
 
                     else:
@@ -83,7 +86,7 @@ class Fight:
                         if fighter.health <= .4 * fighter.maxHealth and opponentPower > 2.5 and random.randint(0,5) < opponentPower:
                             fighter.active = False
                             fighter.team.remove(fighter)
-                            print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") flees from the battle!" )
+                            print(fighter.full_name + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") flees from the battle!" )
                             fighter.team.membersFled += 1
                             if fighter.team.members == []:
                                 self.victor = fighter.team.opponent
@@ -91,7 +94,7 @@ class Fight:
                                 break
 
                         else:
-                            #print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") missed " + fighter.species.genderPronouns[fighter.gender][0] + " attack on " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
+                            #print(fighter.full_name + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") missed " + fighter.species.genderPronouns[fighter.gender][0] + " attack on " + fighter.target.full_name + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +")!")
                             fighter.team.missedAttacks += 1
 
         print(self.victor.name + " are victorious over " + self.loser.name +"!")
