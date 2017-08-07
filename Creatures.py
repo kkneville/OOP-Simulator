@@ -204,7 +204,7 @@ class Humanoid(Animal):
 
     def equip(self, item):
         self.equipment.equip(item)
-    
+
     def update(self, wood, metal, food):
         if self.family.leader is self:
             self.family.update()
@@ -315,7 +315,7 @@ class Elf(Humanoid):
     def __init__(self, name, gender, parents = [None, None], maxHealth = 75,
                  lifespan = 30, strength = 13, defense = 10, speed = 14):
         self.species = Elf
-        Humanoid.__init__(self, name, gender, parents, 'Confederation', maxHealth, lifespan, strength, defense, speed)
+        Humanoid.__init__(self, name, gender, parents, 'Regents', maxHealth, lifespan, strength, defense, speed)
 
     def update(self):
         Humanoid.update(self, 8, 7, 7)

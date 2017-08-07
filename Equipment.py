@@ -1,8 +1,17 @@
 import random
+import inspect
+
+def updateEquipmentCatalog(clas):
+    equipmentCatalog = {'Head':[],'Torso':[],'Arms':[],'Hands':[],'Legs':[],'Feet':[]}
+    if inspect.isclass(clas):
+        if not clas.__subclasses__():
+            equipmentCatalog[clas.slotType].append(clas)
+        else:
+            for equipment in clas.__subclasses__():
+                updateEquipmentCatalog(equipment)
+    return equipmentCatalog
 
 class Equipment:
-    
-    equipmentCatalog = {'Head':[],'Torso':[],'Arms':[],'Hands':[],'Legs':[],'Feet':[]}
 
     def __init__(self, name, slotType, slotQuantity, wood, metal, productionQuantity, equipper = None):
         self.name = name
@@ -13,12 +22,7 @@ class Equipment:
         self.equipper = equipper
         self.productionQuantity = productionQuantity
 
-    def updateEquipmentCatalog(cls):
-        if not cls.__subclasses__():
-            Equipment.equipmentCatalog[cls.slotType].append(cls)
-        else:
-            for equipment in cls.__subclasses__():
-                Equipment.updateEquipmentCatalog(equipment)
+
 
     def __repr__(self):
         return self.name
@@ -96,8 +100,8 @@ class Boot(Armor):
 
 
 class Inventory:
-    Equipment.updateEquipmentCatalog(Equipment)
-    equipmentChoices = Equipment.equipmentCatalog
+
+    equipmentChoices = updateEquipmentCatalog(Equipment)
 
     def __init__(self, owner, heads = 0, torso = 0, arms = 0, hands = 0, legs = 0, feet = 0):
         self.equipped = {}
@@ -147,8 +151,7 @@ class Inventory:
         if equipment in self.equipped[equipment.slotType] or [equip for equip in self.equipped[equipment.slotType] if isinstance(equip , equipment)]:
             return True
         return False
-        
-    
+
     def unequip(self, item):
         self.equip(None, item)
         item.equipper = None
@@ -162,7 +165,7 @@ class Inventory:
 
     def getNumberUnfilled(self, slot):
         return len([equipment for equipment in self.equipped[slot] if equipment is None])
-    
+
     def makeDemand(self):
         while not self.demand:
             slotChoice = random.choice(self.getUnfilledSlots())

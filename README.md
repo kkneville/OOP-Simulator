@@ -3,18 +3,23 @@ OOP-based fantasy RPG environment simulator
 
 # To Do:
 
-Add different races
+More “Sentient” Species - goblins, orcs, kobolds, ents, giants, 
 
-Add horde animal objects
+Horde Animal classes -
 
-Settlements
+Settlements - Towns, cities
 
-Relationship status
+Government systems - Republics, Monarchies, Oligarchies
 
-Skill sets
+Government positions - councils, senates, diplomats, generals
+
+Laws - Taxation, Social laws, religious laws, government laws, tyranny
+
+Personal diplomacy systems
+
+Skill Sets
 
 Log/History
-
 
 
 # Working on:
@@ -22,6 +27,8 @@ Log/History
 World and Character aging/progression
 
 Equipment and resources
+
+Killing Python 2 support :(
 
 
 # Done:

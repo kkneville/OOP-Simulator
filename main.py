@@ -4,7 +4,6 @@ import random
 if __name__ == "__main__":
     aWin = 0
     jWin = 0
-
     for x in range(1):
         print('World Generated')
         earth.year = 5

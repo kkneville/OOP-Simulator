@@ -1,4 +1,5 @@
 from Creatures import *
+from termcolor import colored
 
 class Fight:
 
@@ -65,7 +66,7 @@ class Fight:
                         else:
                             fighter.target.hurt(damage, fighter, self)
                             if not fighter.target.alive:
-                                print(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") struck down " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +") with " + str(damage) +" damage!")
+                                print(colored(fighter.fullName + " ("+ str(fighter.health) + "/"+ str(fighter.maxHealth) +") struck down " + fighter.target.fullName + " ("+ str(fighter.target.health) + "/"+ str(fighter.target.maxHealth) +") with " + str(damage) +" damage!", 'red'))
                                 fighter.target.team.teamCasulties += 1
                                 fighter.team.opponent.remove(fighter.target)
                                 if fighter.team.opponent.members == []:

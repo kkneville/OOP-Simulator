@@ -50,7 +50,7 @@ class Family:
                 heirOrder = [child for child in self.leader.children if child.alive and child.gender == 'Male'] + [child for child in self.leader.children if child.alive and child.gender == 'Female']
             except AttributeError:
                 heirOrder = self.livingMembers
-        if self.kind == 'Confederation':
+        if self.kind == 'Regents':
             heirOrder = sorted(self.livingMembers, key = lambda x: -x.reputation)
         if self.kind == 'Tribe':
             heirOrder = sorted(self.livingMembers, key = lambda x: -x.strength - x.speed - x.defense)
@@ -80,7 +80,7 @@ class Family:
 
     def update(self):
         print('Updated {}.'.format(self.fullName))
-        
+
 
     @property
     def livingMembers(self):
