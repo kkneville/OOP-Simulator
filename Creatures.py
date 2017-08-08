@@ -42,7 +42,7 @@ class Animal:
         self.killer = None
         self.obituary = None
 
-        self.world.addChars(self)
+        self.world.add_chars(self)
 
     def heal(self, amount):
         if self.health + amount > self.max_health:

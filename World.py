@@ -1,13 +1,19 @@
+"""For instantiating all world objects and controlling space, time, and population."""
+
 from __future__ import division
 
 class World:
+    """Creates one world object.
+    Updates Year: advances aging
+    Population: add_chars adds characters to world
+    alive/dead: returns list of alive and dead characters"""
 
     def __init__(self, name, year):
         self.name = name
         self.year = year
         self.chars = []
 
-    def addChars(self, character):
+    def add_chars(self, character):
         self.chars.append(character)
 
     @property
@@ -23,7 +29,7 @@ class World:
         return len(self.alive)
 
     @property
-    def bio (self):
+    def bio(self):
         string = "{} (Year: {}, Population: {}): the desolate rock upon which existince hinges.".format(self.name, str(self.year), str(self.population))
         print(string)
 
