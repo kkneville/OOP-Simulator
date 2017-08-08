@@ -1,7 +1,11 @@
+"""For equipments (weapons and armor) and inventory systems."""
+
 import random
 import inspect
 
 def update_equipment_catalog(clas):
+    """Updates the dictionary of equipment available for each inventory slot"""
+
     equipment_catalog = {'Head':[], 'Torso':[], 'Arms':[], 'Hands':[], 'Legs':[], 'Feet':[]}
     if inspect.isclass(clas):
         if not clas.__subclasses__():
@@ -24,8 +28,6 @@ class Equipment:
         self.metal = metal
         self.equipper = equipper
         self.amount = amount
-
-
 
     def __repr__(self):
         return self.name

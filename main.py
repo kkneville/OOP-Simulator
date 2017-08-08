@@ -3,6 +3,7 @@
 
 from Creatures import Human
 from World import earth
+from termcolor import colored
 
 if __name__ == "__main__":
 

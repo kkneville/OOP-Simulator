@@ -60,18 +60,18 @@ class Family:
     def family_to_team(self):
         return Team(self.full_name, [member for member in self.living_members if member.age > 8], self.leader)
 
-    def declare_war(self, enemyFamily):
+    def declare_war(self, enemy_family):
         friendly = self.family_to_team()
-        enemy = enemyFamily.family_to_team()
+        enemy = enemy_family.family_to_team()
         war = Fight(friendly, enemy)
         warpoints = len(war.combatants)
-        power = war.powerBalance(friendly, enemy)
+        power = war.power_balance(friendly, enemy)
         war.fight()
         if war.victor == friendly:
             self.score += int((1/power) * 10 + warpoints)
-            enemyFamily.score -= warpoints
+            enemy_family.score -= warpoints
         if war.victor == enemy:
-            enemyFamily.score += int((power * 10) + warpoints)
+            enemy_family.score += int((power * 10) + warpoints)
             self.score -= warpoints
         for fighter in war.combatants:
             fighter.updateStats()
