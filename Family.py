@@ -1,3 +1,4 @@
+from collections import Counter
 from World import earth
 from Combat import Team, Fight
 
@@ -22,7 +23,6 @@ class Family:
         self.wood = 0
         self.metal = 0
         self.food = 0
-        self.rivals = []
 
     def add_member(self, member):
         self.members += [member]
@@ -78,12 +78,36 @@ class Family:
         return war
 
     def update(self):
-        print('Updated {}.'.format(self.full_name))
+        most_demand, demand_list = self.craft_priority()
+        if most_demand and most_demand.wood <= self.wood and most_demand.metal <= self.metal:
+            remaining = most_demand.amount
+            equipper = max(demand_list[most_demand], key=lambda x: x.inventory.get_number_unfilled(most_demand.slot_type))
+            while remaining > 0:
+                crafted = most_demand()
+                remaining -= 1
+                if equipper.inventory.get_number_unfilled(most_demand.slot_type) == 0:
+                    equipper = max(demand_list[most_demand], key=lambda x: x.inventory.get_number_unfilled(most_demand.slot_type))    
+                else:
+                    equipper.equip(crafted)
 
+            self.wood -= most_demand.wood
+            self.metal -= most_demand.metal
+            print("{} has crafted a {} for {}".format(self.full_name, crafted.name, demand_list[most_demand][0].full_name))
+                
 
     @property
     def living_members(self):
         return [member for member in self.members if member.alive]
+
+    def craft_priority(self):
+        member_demands = {}
+        for member in self.members:
+            member.inventory.create_demand()
+            if member.inventory.demand in member_demands:
+                member_demands[member.inventory.demand] += [member]
+            else:
+                member_demands[member.inventory.demand] = [member]
+        return max(member_demands, key=lambda x: len(member_demands[x])), member_demands
 
     @property
     def bio(self):

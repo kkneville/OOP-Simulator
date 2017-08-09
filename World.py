@@ -34,8 +34,9 @@ class World:
         print(string)
 
     def update(self, years):
-        self.year += years
-        for character in self.alive:
-            character.update()
+        for year in range(years):
+            self.year += 1
+            for character in self.alive:
+                character.update()
 
 earth = World('Earth', 0)

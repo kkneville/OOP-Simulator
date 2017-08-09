@@ -5,15 +5,16 @@ import inspect
 
 def update_equipment_catalog(clas):
     """Updates the dictionary of equipment available for each inventory slot"""
-
     equipment_catalog = {'Head':[], 'Torso':[], 'Arms':[], 'Hands':[], 'Legs':[], 'Feet':[]}
-    if inspect.isclass(clas):
-        if not clas.__subclasses__():
-            equipment_catalog[clas.slot_type].append(clas)
-        else:
-            for equipment in clas.__subclasses__():
-                update_equipment_catalog(equipment)
-    return equipment_catalog
+    def updater(catalog, clas):
+        if inspect.isclass(clas):
+            if not clas.__subclasses__():
+                catalog[clas.slot_type].append(clas)
+            else:
+                for equipment in clas.__subclasses__():
+                    updater(catalog, equipment)
+        return catalog
+    return updater(equipment_catalog, clas)
 
 class Equipment:
     """
@@ -33,114 +34,168 @@ class Equipment:
         return self.name
 
 class Weapon(Equipment):
-    slot_type, slot_quantity = 'Hands', 1
-    def __init__(self, name, slot_quantity, wood, metal, strength, defense, speed, amount=1, equipper=None):
-        Equipment.__init__(self, name, self.slot_type, slot_quantity, wood, metal, amount, equipper)
+    slot_type, slot_quantity, amount = 'Hands', 1, 1
+    def __init__(self, name, slot_quantity, wood, metal, strength, defense, speed, equipper=None):
+        Equipment.__init__(self, name, self.slot_type, slot_quantity, wood, metal, self.amount, equipper)
         self.strength = strength
         self.defense = defense
         self.speed = speed
+        self.attackable = True
 
 class Axe(Weapon):
     """
     Common Axe weapon.
     """
+    wood = 1
+    metal = 1
     def __init__(self):
-        Weapon.__init__(self, 'Axe', self.slot_quantity, 1, 1, 3, 1, -1)
+        Weapon.__init__(self, 'Axe', self.slot_quantity, self.wood, self.metal, 3, 1, -1)
+        self.attack_verb = 'slashed'
 
 class Sword(Weapon):
     """
     Common Sword weapon.
     """
+    wood = 1
+    metal = 2
     def __init__(self):
-        Weapon.__init__(self, 'Sword', self.slot_quantity, 1, 2, 4, 2, -2)
+        Weapon.__init__(self, 'Sword', self.slot_quantity, self.wood, self.metal, 4, 2, -2)
+        self.attack_verb = 'sliced'
 
 class Spear(Weapon):
     """
     Common Spear weapon.
     """
+    wood = 2
+    metal = 1
     def __init__(self):
-        Weapon.__init__(self, 'Spear', self.slot_quantity, 2, 1, 4, 1, -1)
+        Weapon.__init__(self, 'Spear', self.slot_quantity, self.wood, self.metal, 4, 1, -1)
+        self.attack_verb = 'stabbed'
 
 class Halberd(Weapon):
     """
     Common Halberd weapon.
     """
-    slotQuantity = 2
+    wood = 2
+    metal = 2
     def __init__(self):
-        Weapon.__init__(self, 'Halberd', self.slot_quantity, 2, 2, 5, 2, -2)
+        Weapon.__init__(self, 'Halberd', self.wood, self.metal, 2, 5, 2, -2)
+        self.attack_verb = 'stabbed'
 
 class Hammer(Weapon):
     """
     Common Hammer weapon.
     """
+    wood = 2
+    metal = 2
     def __init__(self):
-        Weapon.__init__(self, 'Hammer', self.slot_quantity, 2, 2, 4, 3, -2)
+        Weapon.__init__(self, 'Hammer', self.slot_quantity, self.wood, self.metal, 4, 3, -2)
+        self.attack_verb = 'smashed'
 
 class Mace(Weapon):
     """
     Common Mace weapon.
     """
+    wood = 1
+    metal = 1
     def __init__(self):
-        Weapon.__init__(self, 'Mace', self.slot_quantity, 1, 1, 2, 2, -1)
+        Weapon.__init__(self, 'Mace', self.slot_quantity, self.wood, self.metal, 2, 2, -1)
+        self.attack_verb = 'smashed'
 
 class Armor(Equipment):
     """
     Armor class.
     """
-    slot_quantity = 1
-    def __init__(self, name, slot_type, slot_quantity, wood, metal, strength, defense, speed, amount=1, equipper=None):
-        Equipment.__init__(self, name, slot_type, slot_quantity, wood, metal, amount, equipper)
+    slot_quantity, amount = 1, 1
+    def __init__(self, name, slot_type, slot_quantity, wood, metal, strength, defense, speed, equipper=None):
+        Equipment.__init__(self, name, slot_type, slot_quantity, wood, metal, self.amount, equipper)
         self.strength = strength
         self.defense = defense
         self.speed = speed
+        self.attackable = False
 
 class Shield(Armor):
     """
     Common Shield.
     """
+    wood = 0
+    metal = 1
     slot_type = 'Hands'
     def __init__(self):
-        Armor.__init__(self, 'Shield', self.slot_type, self.slot_quantity, 0, 1, 0, 2, -1)
+        Armor.__init__(self, 'Shield', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 2, -1)
+        self.attackable = True
+        self.attack_verb = 'struck'
 
 class Helmet(Armor):
     """
     Common Helmet.
     """
+    wood = 0
+    metal = 1
     slot_type = 'Head'
     def __init__(self):
-        Armor.__init__(self, 'Helmet', self.slot_type, self.slot_quantity, 0, 1, 0, 2, -1)
+        Armor.__init__(self, 'Helmet', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 2, -1)
 
 class Plate(Armor):
     """
     Common Plate.
     """
+    wood = 0
+    metal = 2
     slot_type = 'Torso'
     def __init__(self):
-        Armor.__init__(self, 'Plate', self.slot_type, self.slot_quantity, 0, 2, 0, 4, -3)
+        Armor.__init__(self, 'Plate', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 4, -3)
 
 class Leggings(Armor):
     """
     Common Leggings.
     """
+    wood = 0
+    metal = 2
     slot_type, slot_quantity = 'Legs', 2
     def __init__(self):
-        Armor.__init__(self, 'Leggings', self.slot_type, self.slot_quantity, 0, 2, 0, 3, -2)
+        Armor.__init__(self, 'Leggings', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 3, -2)
 
 class Gauntlet(Armor):
     """
     Common Gauntlet.
     """
+    wood = 0
+    metal = 1
+    amount = 2
     slot_type = 'Arms'
     def __init__(self):
-        Armor.__init__(self, 'Gauntlet', self.slot_type, self.slot_quantity, 0, 1, 0, 1, -1, 2)
+        Armor.__init__(self, 'Gauntlet', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 1, -1)
 
 class Boot(Armor):
     """
     Common Boots.
     """
+    wood = 0
+    metal = 1
+    amount = 2
     slot_type = 'Feet'
     def __init__(self):
-        Armor.__init__(self, 'Boot', self.slot_type, self.slot_quantity, 0, 1, 0, 1, -1, 2)
+        Armor.__init__(self, 'Boot', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 1, -1)
+
+
+# class RangedWeapon(Weapon):
+#     def __init__(self, name, slotQuantity, wood, metal, strength, defense, speed, ammo, equipper = None):
+#         Weapon.__init__(self, name, slotQuantity, wood, metal, strength, defense, speed, equipper = None)
+#         self.ammo = ammo
+#
+# class Longbow(RangedWeapon):
+# ma    def __init__(self):
+#         RangedWeapon.__init__(self, 'Longbow', 2, 2, 0, 4, 0, 0, Arrow, equipper = None)
+#
+# class Crossbow(RangedWeapon):
+#     def __init__(self):
+#         RangedWeapon.__init__(self, 'Crossbow', 2, 3, 0, 4, 0, 1, Bolt, equipper = None)
+#
+# class Ammunition(Equipment):
+#     def __init__(self, name, slotQuantity):
+#         Equipment.__init__(self, name, 'Bag', slotQuantity, wood, metal, equipper = None)
+
 
 
 class Inventory:
@@ -189,15 +244,12 @@ class Inventory:
                     if slots_filled == add_quantity:
                         break
             if item:
+                if item.equipper:
+                    item.equipper.inventory.unequip(item)
                 item.equipper = self.owner
                 self.owner.eqStrength += item.strength
                 self.owner.eqDefense += item.defense
                 self.owner.eqSpeed += item.speed
-
-    def has_equipped(self, equipment):
-        if equipment in self.equipped[equipment.slotType] or [equip for equip in self.equipped[equipment.slot_type] if isinstance(equip, equipment)]:
-            return True
-        return False
 
     def unequip(self, item):
         self.equip(None, item)
@@ -206,6 +258,20 @@ class Inventory:
         self.owner.eqStrength -= item.strength
         self.owner.eqDefense -= item.defense
         self.owner.eqSpeed -= item.speed
+    
+    def has_equipped(self, equipment):
+        """returns True if an inventory has the specific equipment or type of equipment equipped"""
+        if equipment in self.equipped[equipment.slot_type] or [equip for equip in self.equipped[equipment.slot_type] if isinstance(equip, equipment)]:
+            return True
+        return False
+
+    def get_equipped(self, attackable=False):
+        equip_list = []
+        for slot in self.equipped:
+            equip_list += [equipment for equipment in self.equipped[slot] if equipment]
+        if attackable:
+            equip_list = [equipment for equipment in equip_list if equipment.attackable]
+        return equip_list
 
     def get_unfilled_slots(self):
         return [slot for slot in self.equipped if None in self.equipped[slot]]
@@ -213,7 +279,7 @@ class Inventory:
     def get_number_unfilled(self, slot):
         return len([equipment for equipment in self.equipped[slot] if equipment is None])
 
-    def make_demand(self):
+    def create_demand(self):
         while not self.demand:
             slot_choice = random.choice(self.get_unfilled_slots())
             demand = random.choice(self.equipment_choices[slot_choice])
@@ -222,19 +288,14 @@ class Inventory:
             if demand.slot_quantity <= self.get_number_unfilled(slot_choice):
                 self.demand = demand
 
-# class RangedWeapon(Weapon):
-#     def __init__(self, name, slotQuantity, wood, metal, strength, defense, speed, ammo, equipper = None):
-#         Weapon.__init__(self, name, slotQuantity, wood, metal, strength, defense, speed, equipper = None)
-#         self.ammo = ammo
-#
-# class Longbow(RangedWeapon):
-# ma    def __init__(self):
-#         RangedWeapon.__init__(self, 'Longbow', 2, 2, 0, 4, 0, 0, Arrow, equipper = None)
-#
-# class Crossbow(RangedWeapon):
-#     def __init__(self):
-#         RangedWeapon.__init__(self, 'Crossbow', 2, 3, 0, 4, 0, 1, Bolt, equipper = None)
-#
-# class Ammunition(Equipment):
-#     def __init__(self, name, slotQuantity):
-#         Equipment.__init__(self, name, 'Bag', slotQuantity, wood, metal, equipper = None)
+
+
+    def __repr__(self):
+        string = "{:>30}'s Inventory:" .format(self.owner.full_name)
+        for slot, equip_list in self.equipped.items():
+            equip_string = ", ".join([equip.name for equip in equip_list if equip])
+            string += "\n {:>30} : {}".format(slot, equip_string)
+        return string
+        
+        
+

@@ -87,17 +87,17 @@ class Animal:
         battle = Fight(friends, enemies)
         power_balance = battle.power_balance(friends, enemies)
         if power_balance > 1.1:
-            print("{} decides to fight {}".format(self.full_name, ", ".join(target.name for target in targets)))
+            print("{} decides to fight {}".format(self.full_name, ", ".join([target.name for target in targets])))
             battle.fight()
         else:
-            print(self.full_name + "{} decides not to fight {}".format(self.full_name, ", ".join(target.name for target in targets)))
+            print(self.full_name + "{} decides not to fight {}".format(self.full_name, ", ".join([target.name for target in targets])))
 
     def reproduce(self, mate):
         if self.age >= 10 and mate.age >= 10 and self.gender == 'Female' and mate.gender == 'Male' and self.species == mate.species:
             child = self.species.create(self, mate)
             self.children += [child]
             mate.children += [child]
-            print("{} and {} gave birth to the {} {} {} in the year {}".format(self.full_name, mate.full_name, child.species.className.lower(), child.gender.lower(), child.full_name, str(self.world.year)))
+            print("{} and {} gave birth to the {} {} {} in the year {}".format(self.full_name, mate.full_name, child.species.class_name.lower(), child.gender.lower(), child.full_name, str(self.world.year)))
             return child
 
     def create(self, mate):
@@ -126,7 +126,7 @@ class Animal:
 
     @property
     def bio(self):
-        string = "A {} year old {} {} known as {} born in year {}".format(str(self.age), self.species.className, self.gender.lower(), self.full_name, str(self.birth_date))
+        string = "A {} year old {} {} known as {} born in year {}".format(str(self.age), self.species.class_name, self.gender.lower(), self.full_name, str(self.birth_date))
         if self.father:
             string += " to " + self.father.full_name
         if self.mother:
@@ -150,7 +150,7 @@ class Animal:
         print(string)
 
 class Humanoid(Animal):
-    className = 'Humanoid'
+    class_name = 'Humanoid'
     numeralTitles = ['', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI']
     combatQualifications = [lambda x: x.defense > 20, lambda x: x.strength > 20, lambda x: x.strength > 20 and x.defense > 20 and len(x.kills) > 0, lambda x: len(x.kills) > 3, lambda x: (x.strength > 23 and x.defense > 20) or len(x.kills) > 5, lambda x: (x.strength > 25 and x.defense > 23) or len(x.kills) > 7, lambda x: (x.strength > 27 and x.defense > 30 and x.speed > 18) or len(x.kills) > 9, lambda x: len([kill for kill in x.kills if kill in kill.family.leaders]) >= 3 and x.strength > 23]
     familyQualifications = [lambda x: x.family.score > 40, lambda x: x.family.score > 70, lambda x: x.family.score > 100, lambda x: x.family.score > 150, lambda x: x.family.score > 200]
@@ -185,7 +185,7 @@ class Humanoid(Animal):
         self.kills = []
 
         # Equipment format: [1 head, 1 torso, 2 arms, 2 hands, 2 legs, 2 feet]
-        self.equipment = Inventory(self, 1, 1, 2, 2, 2, 2)
+        self.inventory = Inventory(self, 1, 1, 2, 2, 2, 2)
 
     @property
     def reputation(self):
@@ -214,7 +214,10 @@ class Humanoid(Animal):
         return creation
 
     def equip(self, item):
-        self.equipment.equip(item)
+        self.inventory.equip(item)
+
+    def unequip(self, item):
+        self.inventory.unequip(item)
 
     def update(self, wood, metal, food):
         if self.family.leader is self:
@@ -236,13 +239,12 @@ class Humanoid(Animal):
                 self.speed -= 1
         else:
             self.strength, self.defense, self.speed = self._strength, self._defense, self._speed
+            self.family.wood += wood
+            self.family.metal += metal
+            self.family.food += food
 
-        self.family.wood += wood
-        self.family.metal += metal
-        self.family.food += food
         if self.health < self.max_health:
             self.heal(10)
-
 
     def updateStats(self):
         if self.strength_dealt >= 50:
@@ -281,7 +283,7 @@ class Humanoid(Animal):
             return self.family.declare_war(enemyFamily)
 
 class Human(Humanoid):
-    className = 'Human'
+    class_name = 'Human'
     data_file = open('./Data/Human.txt', 'r')
     maleNames = data_file.readline().split(', ') [:-1]
     femaleNames = data_file.readline().split(', ') [:-1]
@@ -298,7 +300,7 @@ class Human(Humanoid):
         Humanoid.update(self, 6, 6, 10)
 
 class Dwarf(Humanoid):
-    className = 'Dwarf'
+    class_name = 'Dwarf'
     data_file = open('./Data/Human.txt', 'r')
     maleNames = data_file.readline().split(', ') [:-1]
     femaleNames = data_file.readline().split(', ') [:-1]
@@ -315,7 +317,7 @@ class Dwarf(Humanoid):
         Humanoid.update(self, 5, 10, 7)
 
 class Elf(Humanoid):
-    className = 'Elf'
+    class_name = 'Elf'
     data_file = open('./Data/Human.txt', 'r')
     maleNames = data_file.readline().split(', ') [:-1]
     femaleNames = data_file.readline().split(', ') [:-1]
