@@ -46,8 +46,8 @@ class Axe(Weapon):
     """
     Common Axe weapon.
     """
-    wood = 1
-    metal = 1
+    wood = 3
+    metal = 4
     def __init__(self):
         Weapon.__init__(self, 'Axe', self.slot_quantity, self.wood, self.metal, 3, 1, -1)
         self.attack_verb = 'slashed'
@@ -56,8 +56,8 @@ class Sword(Weapon):
     """
     Common Sword weapon.
     """
-    wood = 1
-    metal = 2
+    wood = 3
+    metal = 5
     def __init__(self):
         Weapon.__init__(self, 'Sword', self.slot_quantity, self.wood, self.metal, 4, 2, -2)
         self.attack_verb = 'sliced'
@@ -66,8 +66,8 @@ class Spear(Weapon):
     """
     Common Spear weapon.
     """
-    wood = 2
-    metal = 1
+    wood = 8
+    metal = 3
     def __init__(self):
         Weapon.__init__(self, 'Spear', self.slot_quantity, self.wood, self.metal, 4, 1, -1)
         self.attack_verb = 'stabbed'
@@ -76,8 +76,8 @@ class Halberd(Weapon):
     """
     Common Halberd weapon.
     """
-    wood = 2
-    metal = 2
+    wood = 8
+    metal = 6
     def __init__(self):
         Weapon.__init__(self, 'Halberd', self.wood, self.metal, 2, 5, 2, -2)
         self.attack_verb = 'stabbed'
@@ -86,8 +86,8 @@ class Hammer(Weapon):
     """
     Common Hammer weapon.
     """
-    wood = 2
-    metal = 2
+    wood = 5
+    metal = 4
     def __init__(self):
         Weapon.__init__(self, 'Hammer', self.slot_quantity, self.wood, self.metal, 4, 3, -2)
         self.attack_verb = 'smashed'
@@ -96,8 +96,8 @@ class Mace(Weapon):
     """
     Common Mace weapon.
     """
-    wood = 1
-    metal = 1
+    wood = 3
+    metal = 4
     def __init__(self):
         Weapon.__init__(self, 'Mace', self.slot_quantity, self.wood, self.metal, 2, 2, -1)
         self.attack_verb = 'smashed'
@@ -119,7 +119,7 @@ class Shield(Armor):
     Common Shield.
     """
     wood = 0
-    metal = 1
+    metal = 7
     slot_type = 'Hands'
     def __init__(self):
         Armor.__init__(self, 'Shield', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 2, -1)
@@ -131,7 +131,7 @@ class Helmet(Armor):
     Common Helmet.
     """
     wood = 0
-    metal = 1
+    metal = 5
     slot_type = 'Head'
     def __init__(self):
         Armor.__init__(self, 'Helmet', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 2, -1)
@@ -141,7 +141,7 @@ class Plate(Armor):
     Common Plate.
     """
     wood = 0
-    metal = 2
+    metal = 14
     slot_type = 'Torso'
     def __init__(self):
         Armor.__init__(self, 'Plate', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 4, -3)
@@ -151,7 +151,7 @@ class Leggings(Armor):
     Common Leggings.
     """
     wood = 0
-    metal = 2
+    metal = 8
     slot_type, slot_quantity = 'Legs', 2
     def __init__(self):
         Armor.__init__(self, 'Leggings', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 3, -2)
@@ -161,7 +161,7 @@ class Gauntlet(Armor):
     Common Gauntlet.
     """
     wood = 0
-    metal = 1
+    metal = 4
     amount = 2
     slot_type = 'Arms'
     def __init__(self):
@@ -172,11 +172,11 @@ class Boot(Armor):
     Common Boots.
     """
     wood = 0
-    metal = 1
+    metal = 4
     amount = 2
     slot_type = 'Feet'
     def __init__(self):
-        Armor.__init__(self, 'Boot', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 1, -1)
+        Armor.__init__(self, 'Boot', self.slot_type, self.slot_quantity, self.wood, self.metal, 0, 1, 0)
 
 
 # class RangedWeapon(Weapon):
@@ -184,7 +184,7 @@ class Boot(Armor):
 #         Weapon.__init__(self, name, slotQuantity, wood, metal, strength, defense, speed, equipper = None)
 #         self.ammo = ammo
 #
-# class Longbow(RangedWeapon):
+# class Bow(RangedWeapon):
 # ma    def __init__(self):
 #         RangedWeapon.__init__(self, 'Longbow', 2, 2, 0, 4, 0, 0, Arrow, equipper = None)
 #
@@ -280,15 +280,18 @@ class Inventory:
         return len([equipment for equipment in self.equipped[slot] if equipment is None])
 
     def create_demand(self):
-        while not self.demand:
-            slot_choice = random.choice(self.get_unfilled_slots())
-            demand = random.choice(self.equipment_choices[slot_choice])
+        self.demand = None
+        unfilled_slots = self.get_unfilled_slots()
+        while not self.demand and unfilled_slots:
+            if 'Hands' in unfilled_slots:
+                demand = random.choice(self.equipment_choices['Hands'])
+            else:
+                slot_choice = random.choice(unfilled_slots)
+                demand = random.choice(self.equipment_choices[slot_choice])
             if demand is Shield and self.has_equipped(Shield):
                 continue
-            if demand.slot_quantity <= self.get_number_unfilled(slot_choice):
+            if demand.slot_quantity <= self.get_number_unfilled(demand.slot_type):
                 self.demand = demand
-
-
 
     def __repr__(self):
         string = "{:>30}'s Inventory:" .format(self.owner.full_name)

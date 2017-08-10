@@ -1,6 +1,7 @@
 """For instantiating all world objects and controlling space, time, and population."""
 
 from __future__ import division
+from termcolor import colored
 
 class World:
     """Creates one world object.
@@ -35,6 +36,7 @@ class World:
 
     def update(self, years):
         for year in range(years):
+            input('')
             self.year += 1
             for character in self.alive:
                 character.update()

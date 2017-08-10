@@ -57,15 +57,15 @@ class Fight:
 
     def attack(self, combatant):
         if combatant.weapon:
-            attack_multiplier = 1 + int(.5 * combatant.weapon.strength)
+            attack_multiplier = 1 + int(.4 * combatant.weapon.strength)
         else:
             attack_multiplier = 1
-        defense_multiplier = 1 + combatant.target.eqDefense
+        defense_bonus = combatant.target.eqDefense
         attack_range = int(combatant.strength * (combatant.health / combatant.max_health))
         defense_range = int(combatant.target.defense * (combatant.target.health / combatant.target.max_health))
         attack = random.randint(int(.25 * attack_range), attack_range)
         defense = random.randint(int(.25 * defense_range), defense_range)
-        damage = (attack * attack_multiplier) - (defense * defense_multiplier)
+        damage = (attack * attack_multiplier) - (defense + defense_bonus)
         combatant.strength_dealt += attack
         combatant.target.defense_dealt += defense
         if damage > 0:
@@ -83,32 +83,33 @@ class Fight:
                 else:
                     print("{} ({}/{}) struck {} ({}/{}) with {} fists, dealing {} damage!".format(combatant.full_name, str(combatant.health), str(combatant.max_health), combatant.target.full_name, str(combatant.target.health), str(combatant.target.max_health), combatant.species.gender_pronouns[combatant.gender][0], str(damage)))
         else:
-            #print(combatant.full_name + "'s ("+ str(combatant.health) + "/"+ str(combatant.max_health) +") attack was blocked by " + combatant.target.full_name + " ("+ str(combatant.target.health) + "/"+ str(combatant.target.max_health) +")!")
+            print("{}'s ({}/{}) attack was blocked by {} ({}/{})!".format(combatant.full_name, str(combatant.health), str(combatant.max_health), combatant.target.full_name, str(combatant.target.health), str(combatant.target.max_health)))
             combatant.target.team.blocked_attacks += 1
             
     def fight(self):
         self.pick_targets()
         while not self.victor:
             for combatant in self.active_combatants:
+                if not combatant.alive or not combatant.active:
+                    continue
                 self.check_victory()
                 if self.victor:
-                    self.declare_victory()
                     break
                 self.check_flee(combatant)
                 if combatant.active:
                     if combatant.target not in self.active_combatants:
                         self.pick_targets(combatant)
                     self.pick_weapon(combatant)
-                    self.attack(combatant)
-                    if random.randint(0, 25) < combatant.speed + combatant.eqSpeed:
+                    if random.randint(0, 26) < combatant.speed + combatant.eqSpeed:
                         combatant.speed_dealt += 1
                         self.attack(combatant)
                     else:
-                        #print(" ({}/{}) missed {} attack on {} ({}/{})!".format(combatant.full_name, str(combatant.health), str(combatant.max_health), combatant.species.gender_pronouns[combatant.gender][0], combatant.target.full_name, str(combatant.target.health), str(combatant.target.max_health)))
+                        print("{} ({}/{}) missed {} attack on {} ({}/{})!".format(combatant.full_name, str(combatant.health), str(combatant.max_health), combatant.species.gender_pronouns[combatant.gender][0], combatant.target.full_name, str(combatant.target.health), str(combatant.target.max_health)))
                         combatant.team.missed_attacks += 1
+        self.declare_victory()
 
     def declare_victory(self):
-        print(colored("{} are victorious over {}!".format(colored(self.victor.name, 'cyan'), self.loser.name)), 'red')
+        print("{} are victorious over {}!".format(colored(self.victor.name, 'red'), colored(self.loser.name, 'red')))
         self.battle_results = "\n{:>30}\t{}   {}".format("Battle Statistics:", self.team_a.name, self.team_b.name)
         self.battle_results += "\n{:>30}\t{:<{name}}   {}".format("Damage Inflicted:", str(self.team_a.damage_dealt), str(self.team_b.damage_dealt), name=len(self.team_a.name))
         self.battle_results += "\n{:>30}\t{:<{name}}   {}".format("Casualties:", str(self.team_a.team_casulties), str(self.team_b.team_casulties), name=len(self.team_a.name))

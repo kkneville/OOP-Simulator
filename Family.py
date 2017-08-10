@@ -46,7 +46,7 @@ class Family:
             heir_order = sorted(self.members, key=lambda x: -x.age)
         if self.kind == 'House':
             try:
-                heir_order = [child for child in self.leader.children if child.alive and child.gender == 'Male'] + [child for child in self.leader.children if child.alive and child.gender == 'Female']
+                heir_order = sorted(self.leader.children, key=lambda x: x.gender, reverse=True)
             except AttributeError:
                 heir_order = self.living_members
         if self.kind == 'Regents':
@@ -89,7 +89,6 @@ class Family:
                     equipper = max(demand_list[most_demand], key=lambda x: x.inventory.get_number_unfilled(most_demand.slot_type))    
                 else:
                     equipper.equip(crafted)
-
             self.wood -= most_demand.wood
             self.metal -= most_demand.metal
             print("{} has crafted a {} for {}".format(self.full_name, crafted.name, demand_list[most_demand][0].full_name))

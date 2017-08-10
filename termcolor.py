@@ -27,7 +27,7 @@ from __future__ import print_function
 import os
 
 
-__ALL__ = [ 'colored', 'cprint' ]
+__ALL__ = ['colored', 'cprint']
 
 VERSION = (1, 1, 0)
 
