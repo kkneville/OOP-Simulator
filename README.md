@@ -17,8 +17,6 @@ Laws - Taxation, Social laws, religious laws, government laws, tyranny
 
 Personal diplomacy systems
 
-Skill Sets
-
 Log/History
 
 
@@ -26,9 +24,7 @@ Log/History
 
 World and Character aging/progression
 
-Equipment and resources
-
-Killing Python 2 support :(
+Skill Sets
 
 
 # Done:
@@ -40,6 +36,10 @@ Update Cycles
 Primitive Combat
 
 Family Trees
+
+Equipment and resources
+
+Killed Python 2 support
 
 # Running:
 
