@@ -11,3 +11,7 @@ __pycache__/Equipment.cpython-36.pyc
 __pycache__/Family.cpython-36.pyc
 __pycache__/termcolor.cpython-36.pyc
 .DS_Store
+.vscode/launch.json
+.vscode/.ropeproject/objectdb
+.vscode/.ropeproject/config.py
+.vscode/settings.json
