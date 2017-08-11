@@ -1,4 +1,5 @@
 import random
+from Equipment import RangedWeapon
 from World import earth
 from termcolor import colored
 
@@ -39,13 +40,23 @@ class Fight:
         return [combatant for combatant in self.combatants if combatant.active]
 
     def pick_targets(self, combatant=None):
-        if combatant:
-            eligible = [target for target in self.active_combatants if target.team is combatant.team.opponent]
-            combatant.target = random.choice(eligible)
-        else:
-            for combatant in self.active_combatants:
+        try:
+            if combatant:
+                eligible = [target for target in self.active_combatants if target.team is combatant.team.opponent and not target.inventory.has_equipped(RangedWeapon)]
+                combatant.target = random.choice(eligible)
+            else:
+                for combatant in self.active_combatants:
+                    eligible = [target for target in self.active_combatants if target.team is combatant.team.opponent and not target.inventory.has_equipped(RangedWeapon)]
+                    combatant.target = random.choice(eligible)
+        except IndexError:
+            if combatant:
                 eligible = [target for target in self.active_combatants if target.team is combatant.team.opponent]
                 combatant.target = random.choice(eligible)
+            else:
+                for combatant in self.active_combatants:
+                    eligible = [target for target in self.active_combatants if target.team is combatant.team.opponent]
+                    combatant.target = random.choice(eligible)
+
 
 
     def pick_weapon(self, combatant):
@@ -53,11 +64,20 @@ class Fight:
         if weapons:
             combatant.weapon = random.choice(weapons)
         else:
-           combatant.weapon = None
+            combatant.weapon = None
+
+        
 
     def attack(self, combatant):
         if combatant.weapon:
-            attack_multiplier = 1 + int(.4 * combatant.weapon.strength)
+            if isinstance(combatant.weapon, RangedWeapon) and combatant.weapon.is_prepared():
+                ammo = combatant.weapon.get_ammo()
+                attack_multiplier = 1 + int(.4 * combatant.weapon.strength * ammo.strength)
+                ammo.stack_amount -= 1
+                if ammo.stack_amount == 0:
+                    del ammo
+            else:
+                attack_multiplier = 1 + int(.4 * combatant.weapon.strength)
         else:
             attack_multiplier = 1
         defense_bonus = combatant.target.eqDefense

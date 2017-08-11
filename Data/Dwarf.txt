@@ -3,5 +3,5 @@ Asgora, Karazai, Thorsai, Valkareri, Varalei, Coraum, Evva, Renaille, Eramille, 
 Irondrake, Ironhold, Grudgebearer, Silvermarked, Ironblood, Lairstone, Grudgestone, Bronzeslasher, Drakehelm, Silverhelm, Ironhelm, BoatMurdered, Oakenhelm, Shakenfield, Gorhammer, Ironsurge, Hareignhal, 
 the Steady, the Slayer, the Unbreakable, the Bezerker, the Ironblood, the Ironborn, the Helsenheim, of Valgrim’s Chosen, 
 the Noble, the Great, the Legendary, Kazarite, Hammerlord, 
-Halberds, Bows, Riding, 
+Halberd, Bow, 
 Axes, Hammers, Mining, Smithing

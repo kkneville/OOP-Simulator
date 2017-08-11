@@ -4,6 +4,7 @@ from Combat import Team, Fight
 from Family import Family
 from World import earth
 from Equipment import Inventory
+from Skills import Skillsets
 
 
 def gen_random(first, second, standard_dev=5):
@@ -137,13 +138,15 @@ class Animal:
         if not self.alive:
             string += self.obituary
 
-        string += ("\n\n\tStrength: "+ str(self.strength) + "\n\tDefense: " + str(self.defense) + "\n\tSpeed: " + str(self.speed))
+        string += ("\n\n\tStrength: {}\n\tDefense: {}\n\tSpeed: {}".format(str(self.strength), str(self.defense), str(self.speed)) + str(self.speed))
         if self.kills:
             string += "\n\n\t" + str(len(self.kills)) + " Kills:"
             for kill in self.kills:
                 string += "\n\t" + kill.full_name + " (Year "+ str(kill.death_date) + ")"
-
+        
+        
         string += "\n"
+
 
         print(string)
 
@@ -183,7 +186,9 @@ class Humanoid(Animal):
         self.kills = []
 
         # Equipment format: [1 head, 1 torso, 2 arms, 2 hands, 2 legs, 2 feet]
-        self.inventory = Inventory(self, 1, 1, 2, 2, 2, 2)
+        self.inventory = Inventory(self, self.species.blocked_items, 1, 1, 2, 2, 2, 2)
+
+        self.skills = Skillsets(self, self.species.skill_specialties)
 
     @property
     def reputation(self):
@@ -225,6 +230,8 @@ class Humanoid(Animal):
         elder_age = .8 * self.lifespan
         if self.age < puberty_age:
             self.strength += (self._strength - self.strength) // (puberty_age - self.age)
+            self.defense += (self._defense - self.defense) // (puberty_age - self.age)
+            self.speed += (self._speed - self.speed) // (puberty_age - self.age)
         if self.age > elder_age:
             if self.age > self.lifespan:
                 self.hurt(self.health)
@@ -290,7 +297,8 @@ class Human(Humanoid):
     familyNames = data_file.readline().split(', ') [:-1]
     combatTitles = data_file.readline().split(', ') [:-1]
     familyTitles = data_file.readline().split(', ') [:-1]
-    eligibleSkills = data_file.readline().split(', ') [:-1]
+    blocked_items = data_file.readline().split(', ') [:-1]
+    skill_specialties = data_file.readline().split(', ') [:-1]    
 
     def __init__(self, name, gender, parents=[None, None], max_health=50,
                  lifespan=30, strength=22, defense=18, speed=22):
@@ -308,6 +316,8 @@ class Dwarf(Humanoid):
     familyNames = data_file.readline().split(', ') [:-1]
     combatTitles = data_file.readline().split(', ') [:-1]
     familyTitles = data_file.readline().split(', ') [:-1]
+    blocked_items = data_file.readline().split(', ') [:-1]
+    skill_specialties = data_file.readline().split(', ') [:-1]
 
     def __init__(self, name, gender, parents=[None, None], max_health=55,
                  lifespan=30, strength=20, defense=22, speed=20):
@@ -325,6 +335,8 @@ class Elf(Humanoid):
     familyNames = data_file.readline().split(', ') [:-1]
     combatTitles = data_file.readline().split(', ') [:-1]
     familyTitles = data_file.readline().split(', ') [:-1]
+    blocked_items = data_file.readline().split(', ') [:-1]
+    skill_specialties = data_file.readline().split(', ') [:-1]
 
     def __init__(self, name, gender, parents=[None, None], max_health=45,
                  lifespan=30, strength=22, defense=18, speed=22):
