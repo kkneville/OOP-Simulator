@@ -3,9 +3,9 @@ OOP-based fantasy RPG environment simulator
 
 # To Do:
 
-More “Sentient” Species - goblins, orcs, kobolds, ents, giants, 
+Aggressives
 
-Horde Animal classes -
+Horde Animal classes - n/a
 
 Settlements - Towns, cities
 
@@ -18,6 +18,8 @@ Laws - Taxation, Social laws, religious laws, government laws, tyranny
 Personal diplomacy systems
 
 Log/History
+
+Dynamic Economy
 
 
 # Working on:
