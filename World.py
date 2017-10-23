@@ -2,6 +2,7 @@
 
 from __future__ import division
 from termcolor import colored
+import random
 
 class World:
     """Creates one world object.
@@ -13,6 +14,13 @@ class World:
         self.name = name
         self.year = year
         self.chars = []
+        climate = random.randint(1,4)
+        if climate == 1:
+            self.climate = "Icey tundra."
+        if climate == 2:
+            self.climate = "Tropical forest."
+        if climate == 3:
+            self.climate = "Pine forests and rocky mountainous terrain."
 
     def add_chars(self, character):
         self.chars.append(character)
